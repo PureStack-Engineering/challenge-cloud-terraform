@@ -10,3 +10,7 @@ crash.log
 override.tf
 override.tf.json
 .terraform.lock.hcl
+
+# CLI configuration files
+.terraformrc
+terraform.rc
