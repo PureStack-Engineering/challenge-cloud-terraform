@@ -1,5 +1,7 @@
 # ☁️ PureStack Cloud Challenge: The Terraform Protocol
 
+PureStack.es Cloud. Validated by Code.
+
 ### Context
 Welcome to the **PureStack Technical Validation Protocol** for Cloud Engineering.
 Infrastructure is no longer about clicking buttons in the AWS Console. It's about code, reproducibility, and security compliance.
