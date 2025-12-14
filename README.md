@@ -51,6 +51,7 @@ To ensure our **Automated Auditor** works, keep the file structure simple:
 ```text
 /
 ├── .github/workflows/   # PureStack Audit System
+│   └── audit.yml    
 ├── main.tf              # <--- YOUR CODE GOES HERE (Single file is fine for this test)
 ├── .gitignore
 └── README.md
