@@ -1,90 +1,96 @@
-# ☁️ PureStack Cloud Challenge: The Terraform Protocol
+# ☁️ PureStack Infrastructure Challenge: The Terraform Guardrails
 
-**PureStack.es - Cloud Infrastructure Validation.**
-> *"Infrastructure is not about clicking buttons. It's about Code, State, and Security."*
+**PureStack.es - Engineering Validation Protocol.**
+> *"Infrastructure is code. And code must be secure by design."*
 
 ---
 
 ### 📋 Context & Mission
 Welcome to the PureStack Technical Validation Protocol for Cloud Engineering.
-We audit your ability to define reproducible, secure infrastructure using **Terraform (IaC)**. We don't want "ClickOps"; we want code that can be audited and versioned.
+We don't verify if you can click buttons in the AWS Console. We audit your ability to write **Secure Infrastructure as Code (IaC)**.
 
-**The Mission:** Provision a secure web server environment on AWS.
-**The Constraint:** Do NOT assume CLI access or existing resources. Your code must work from a clean slate (`terraform init` -> `terraform apply`).
+**The Scenario:** A junior developer has committed a Terraform file (`terraform/main.tf`) to provision resources for a finance application.
+**The Problem:** The code is functional but **extremely insecure**. It violates critical compliance policies.
+**The Mission:** You must act as the **Security Engineer**. Audit the code, run the policy checks, and refactor the Terraform to make it secure without breaking the infrastructure.
 
 ### 🚦 Certification Levels (Choose your Difficulty)
-Your seniority is defined by how you structure your code, manage state, and modularize resources. State your target level in your Pull Request.
+State your target level in your Pull Request.
 
 #### 🥉 Level 3: Essential / Mid-Level
-* **Focus:** Resource Definition & Syntax.
-* **Requirement:** Define the core infrastructure in `main.tf`.
+* **Focus:** Basic Security Hygiene.
+* **Requirement:** Fix the critical vulnerabilities to pass the provided security tests.
 * **Tasks:**
-    1.  **VPC:** Create a Virtual Private Cloud (`10.0.0.0/16`).
-    2.  **Subnet:** Create a Public Subnet (`10.0.1.0/24`) inside the VPC.
-    3.  **Security Group:**
-        * Allow **HTTP (80)** and **HTTPS (443)** from anywhere (`0.0.0.0/0`).
-        * **CRITICAL:** Do NOT open SSH (22) to the world. (Restrict to a specific IP or close it).
-    4.  **EC2:** Provision a `t2.micro` instance (Ubuntu AMI) attached to the Subnet and Security Group.
-* **Deliverable:** Valid HCL code that passes `terraform validate`.
+    1.  **S3 Audit:** The bucket `finance_data` is publicly accessible. Change the ACL to `private`.
+    2.  **Network Audit:** The Security Group `web_sg` allows SSH (Port 22) from `0.0.0.0/0` (The entire internet). Restrict it to a specific CIDR (e.g., `10.0.0.0/8` or a VPN IP) or remove the rule entirely.
+* **Deliverable:** The security tests (`pytest`) must return GREEN.
 
 #### 🥈 Level 2: Pro / Senior
-* **Focus:** Reusability, Variables & Outputs.
-* **Requirement:** Everything in Level 3 + **No Magic Strings**.
+* **Focus:** Best Practices & Encryption.
+* **Requirement:** Everything in Level 3 + **Encryption & Variables**.
 * **Extra Tasks:**
-    1.  **Variables:** Do not hardcode CIDRs, AMI IDs, or Instance Types. Use `variables.tf` with default values or a `.tfvars` file.
-    2.  **Outputs:** Create an `outputs.tf` file that prints the **Public IP** of the created instance after deployment.
-    3.  **Tagging Strategy:** Apply a consistent tag (e.g., `Project = "PureStack"`, `Environment = "Dev"`) to ALL resources automatically.
-* **Deliverable:** A clean, parameterized configuration separating logic from data.
+    1.  **Encryption:** Financial data must be encrypted at rest. Add a `server_side_encryption_configuration` block to the S3 bucket using `AES256`.
+    2.  **No Hardcoding:** The bucket name and CIDR blocks are hardcoded. Refactor them into `variables.tf` and use `var.bucket_name` in the main file.
+* **Deliverable:** Secure, encrypted, and reusable Terraform code.
 
 #### 🥇 Level 1: Elite / Architect
-* **Focus:** Modules, Provisioning & State Management.
-* **Requirement:** Everything above + **Modularization & User Data**.
+* **Focus:** Policy as Code (PaC) & Modularity.
+* **Requirement:** Everything above + **Custom Policy**.
 * **Extra Tasks:**
-    1.  **Refactoring (Modules):** Move the Networking logic (VPC, Subnet, Gateway) into a reusable `./modules/network` folder. Call this module from the root `main.tf`.
-    2.  **Bootstrapping:** Use `user_data` to install an actual web server (Nginx/Apache) upon boot, creating a simple "Hello PureStack" `index.html`.
-    3.  **Architecture Diagram:** Include a text-based diagram or Mermaid code in the PR description explaining the flow.
-* **Deliverable:** A scalable, modular infrastructure ready for team collaboration.
+    1.  **New Security Rule:** We need to ensure Versioning is enabled.
+        * **Terraform:** Enable `versioning` on the S3 bucket.
+        * **Python Test:** Add a NEW test function in `tests/test_security.py` that parses the HCL and asserts that `versioning { enabled = true }` is present.
+    2.  **Output:** Ensure the secure bucket ARN is exported in `outputs.tf`.
+* **Deliverable:** You don't just follow rules; you write the rules that others follow.
 
 ---
 
-### 🛠️ Tech Stack Requirements
-* **Tool:** Terraform 1.5+ or OpenTofu.
-* **Provider:** AWS (`hashicorp/aws`).
-* **Style:** HCL (HashiCorp Configuration Language).
-* **Linter:** `tflint` (Recommended locally).
+### 🛠️ Tech Stack & Constraints
+* **Language:** HCL (Terraform).
+* **Validation Tool:** Python (`pytest` + `python-hcl2`) acts as the "Policy Engine".
+* **Cloud Provider:** AWS (Mocked - No real credentials needed).
 
 ---
 
 ### 🚀 Execution Instructions
 
 1.  **Fork** this repository.
-2.  Initialize locally: `terraform init`.
-3.  Write your resources in `main.tf` (or split files for Level 2/1).
-4.  Validate syntax: `terraform validate`.
-5.  Submit via **Pull Request** stating your target Level.
+2.  Install dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+3.  **Audit the Code:**
+    * Run the security scanner: `pytest tests/`
+    * Observe the 🚨 Security Alerts.
+4.  **Fix the Vulnerabilities:**
+    * Edit `terraform/main.tf`.
+    * Re-run `pytest` until all tests pass.
+5.  Submit via **Pull Request**.
+
+> **Note:** You will see a ❌ (**Red Cross**) initially. This is the security scanner blocking the insecure deployment. Your goal is to turn it ✅ (**Green**).
 
 ### 🧪 Evaluation Criteria (PureStack Audit)
 
 | Criteria | Weight | Audit Focus |
 | :--- | :--- | :--- |
-| **Security** | 35% | Is Port 22 open to the world? (Immediate Fail). Are permissions least-privilege? |
-| **Syntax & Style** | 25% | Formatting (`terraform fmt`), valid references. |
-| **Best Practices** | 25% | Usage of variables vs hardcoding. Tagging. |
-| **Modularity** | 15% | Directory structure and module usage (Level 1). |
+| **Security** | 40% | Did you close the public bucket and the open SSH port? |
+| **Best Practices** | 30% | usage of `variables.tf` vs Hardcoding (Level 2). |
+| **Code Quality** | 20% | Correct HCL syntax and formatting (`terraform fmt`). |
+| **Tooling** | 10% | Ability to write/modify Python tests (Level 1). |
 
 ---
 
-### 🚨 Project Structure (Guideline)
-To ensure our **Automated Auditor** works, keep the entry point clear.
+### 🚨 Project Structure (Strict)
+To ensure our **Automated Auditor** works, keep the core structure:
 
-**Standard Structure (Level 2/1 Recommended):**
 ```text
 /
-├── .github/workflows/   # PureStack Audit System (DO NOT TOUCH)
-├── modules/             # <--- (Optional) For Level 1
-│   └── network/
-├── main.tf              # <--- ENTRY POINT
-├── variables.tf         # <--- DEFINITIONS
-├── outputs.tf           # <--- RESULTS
+├── .github/workflows/   # PureStack Audit System
+├── terraform/
+│   ├── main.tf          # <--- VULNERABLE CODE HERE
+│   ├── variables.tf
+│   └── outputs.tf
+├── tests/
+│   └── test_security.py # <--- THE SECURITY POLICE (Python Script)
 ├── .gitignore
+├── requirements.txt     # Dependencies
 └── README.md
