@@ -9,8 +9,11 @@
 crash.log
 override.tf
 override.tf.json
-.terraform.lock.hcl
 
-# CLI configuration files
+# Exclude sensitive vars if they exist
+*.tfvars
+*.tfvars.json
+
+# Ignore CLI configuration files
 .terraformrc
 terraform.rc
