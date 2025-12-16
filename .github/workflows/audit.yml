@@ -1,48 +1,21 @@
-name: PureStack Terraform Audit
+name: PureStack Infrastructure Audit
+
 on: [push, pull_request]
 
 jobs:
-  static-analysis:
+  policy-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          terraform_version: 1.5.0
-
-      - name: 🏗️ Terraform Init
-        run: terraform init -backend=false
-
-      - name: 🛡️ Syntax Validation
-        run: terraform validate
-
-      - name: 🕵️ Resource Audit (Manual Check)
-        run: |
-          echo "Checking for mandatory resources..."
+          python-version: '3.10'
           
-          if ! grep -q "resource \"aws_vpc\"" main.tf; then
-            echo "❌ Missing Resource: aws_vpc"
-            exit 1
-          fi
+      - name: Install dependencies
+        run: pip install -r requirements.txt
           
-          if ! grep -q "resource \"aws_instance\"" main.tf; then
-            echo "❌ Missing Resource: aws_instance"
-            exit 1
-          fi
-
-          if ! grep -q "resource \"aws_security_group\"" main.tf; then
-             echo "❌ Missing Resource: aws_security_group"
-             exit 1
-          fi
-
-          echo "✅ All mandatory resources detected."
-
-      - name: 🔐 Security Audit (Port 22 Check)
-        # This is a simple check to see if they opened SSH to the world carelessly
-        run: |
-          if grep -q "from_port.*=.*22" main.tf && grep -q "0.0.0.0/0" main.tf; then
-             echo "⚠️ WARNING: It looks like you opened SSH (22) to the world. Check your Security Group."
-             # We don't fail the build to avoid false positives, but we log a warning.
-          fi
+      - name: Run Security Policy Tests
+        # Ejecuta pytest para validar el código Terraform estáticamente
+        run: pytest tests/
