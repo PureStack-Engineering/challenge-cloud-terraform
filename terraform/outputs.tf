@@ -1,3 +1,9 @@
-output "bucket_name" {
-  value = aws_s3_bucket.finance_data.id
-}
+# -----------------------------------------------------------------------------
+# 🥇 LEVEL 1 TASK: OUTPUTS
+# -----------------------------------------------------------------------------
+# Output the critical resource IDs (e.g., The Secure Bucket ARN).
+# -----------------------------------------------------------------------------
+
+# output "bucket_arn" {
+#   value = ...
+# }
