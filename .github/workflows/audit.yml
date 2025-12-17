@@ -1,21 +1,52 @@
 name: PureStack Infrastructure Audit
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  policy-check:
+  iac-security-check:
     runs-on: ubuntu-latest
+    name: ☁️ IaC Security Gate
+
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Set up Python
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v3
+
+      - name: 🔍 Phase 1: Structural Integrity
+        run: |
+          echo "::group::Structure Validation"
+          if [ ! -f "terraform/main.tf" ]; then echo "❌ Missing: terraform/main.tf"; exit 1; fi
+          if [ ! -f "tests/test_security.py" ]; then echo "❌ Missing: tests/test_security.py"; exit 1; fi
+          echo "✅ Terraform structure is valid."
+          echo "::endgroup::"
+
+      - name: 🕵️ Phase 2: Secret Scanning (Basic)
+        run: |
+          echo "::group::Secret Detection"
+          # Ban hardcoded AWS Access Keys
+          if grep -r "access_key" terraform/; then 
+            echo "❌ CRITICAL: Hardcoded 'access_key' detected. Use environment variables or IAM roles."
+            exit 1
+          fi
+          if grep -r "secret_key" terraform/; then 
+            echo "❌ CRITICAL: Hardcoded 'secret_key' detected."
+            exit 1
+          fi
+          echo "✅ No hardcoded credentials found."
+          echo "::endgroup::"
+
+      - name: 🐍 Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-          
-      - name: Install dependencies
+          cache: 'pip'
+
+      - name: 📦 Install Dependencies
         run: pip install -r requirements.txt
-          
-      - name: Run Security Policy Tests
-        # Ejecuta pytest para validar el código Terraform estáticamente
-        run: pytest tests/
+
+      - name: 🧪 Phase 3: Policy as Code (Pytest)
+        # Esto valida que el bucket sea privado y el SG esté cerrado
+        run: pytest tests/ -v
