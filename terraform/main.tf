@@ -1,31 +1,35 @@
 provider "aws" {
   region = "us-east-1"
+  # Note: Credentials are handled via Environment Variables (Do not hardcode them)
 }
 
+# 🚨 SECURITY VIOLATION 1: Public Bucket
 resource "aws_s3_bucket" "finance_data" {
-  bucket = "purestack-finance-logs"
-  acl    = "public-read"  # 🚨 FALLO 1: Bucket público
+  bucket = "purestack-finance-logs-2024"
+  acl    = "public-read" # <--- CANDIDATE MUST FIX THIS
 
   tags = {
-    Environment = "Dev"
+    Environment = "Production"
+    Department  = "Finance"
   }
 }
 
+# 🚨 SECURITY VIOLATION 2: Open SSH
 resource "aws_security_group" "web_sg" {
-  name        = "web_server_sg"
-  description = "Allow inbound traffic"
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # HTTP OK
-  }
+  name        = "web-server-sg"
+  description = "Security group for web server"
 
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # 🚨 FALLO 2: SSH abierto a todo el mundo
+    cidr_blocks = ["0.0.0.0/0"] # <--- CANDIDATE MUST FIX THIS
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
