@@ -2,30 +2,56 @@ import hcl2
 import pytest
 import os
 
-# Leemos el archivo main.tf
-with open("terraform/main.tf", "r") as file:
-    tf_code = hcl2.load(file)
+TERRAFORM_FILE = "terraform/main.tf"
 
-def test_s3_bucket_is_private():
-    """Level 1: S3 Buckets must be private."""
-    # Buscamos el recurso aws_s3_bucket
-    buckets = tf_code.get("resource", [])[0].get("aws_s3_bucket", {})
+@pytest.fixture
+def tf_code():
+    """Parses the main.tf file into a Python Dict"""
+    if not os.path.exists(TERRAFORM_FILE):
+        pytest.fail(f"❌ File not found: {TERRAFORM_FILE}")
     
-    for name, config in buckets.items():
-        acl = config.get("acl", "private")
-        assert acl == "private", f"🚨 SECURITY ALERT: Bucket '{name}' has ACL '{acl}'. Must be 'private'."
+    with open(TERRAFORM_FILE, 'r') as file:
+        return hcl2.load(file)
 
-def test_security_group_no_open_ssh():
-    """Level 2: Port 22 (SSH) must NOT be open to 0.0.0.0/0."""
-    sgs = tf_code.get("resource", [])[1].get("aws_security_group", {})
+def test_s3_is_private(tf_code):
+    """
+    Policy: S3 Buckets must NOT be public.
+    Check: acl must be 'private'.
+    """
+    # Navigate the HCL structure: resource -> aws_s3_bucket -> finance_data
+    resources = tf_code.get('resource', [])
+    s3_buckets = [r for r in resources if 'aws_s3_bucket' in r]
     
-    for name, config in sgs.items():
-        ingress_rules = config.get("ingress", [])
-        for rule in ingress_rules:
-            from_port = int(rule.get("from_port"))
-            to_port = int(rule.get("to_port"))
-            cidr = rule.get("cidr_blocks", [])
+    found = False
+    for bucket_wrapper in s3_buckets:
+        for name, config in bucket_wrapper.items():
+            if name == 'finance_data':
+                found = True
+                acl = config.get('acl', 'private') # Default if missing
+                assert acl == 'private', f"🚨 SECURITY ALERT: Bucket '{name}' is '{acl}'. Must be 'private'."
+    
+    if not found:
+        pytest.fail("❌ Resource 'aws_s3_bucket.finance_data' not found. Do not delete it, fix it!")
+
+def test_ssh_is_restricted(tf_code):
+    """
+    Policy: SSH (Port 22) must NOT be open to the world (0.0.0.0/0).
+    """
+    resources = tf_code.get('resource', [])
+    security_groups = [r for r in resources if 'aws_security_group' in r]
+    
+    for sg_wrapper in security_groups:
+        for name, config in sg_wrapper.items():
+            ingress_rules = config.get('ingress', [])
+            # In HCL2 parsing, ingress might be a list of dicts
+            if isinstance(ingress_rules, dict):
+                ingress_rules = [ingress_rules]
             
-            # Si es el puerto 22, NO puede tener 0.0.0.0/0
-            if from_port <= 22 <= to_port:
-                assert "0.0.0.0/0" not in cidr, f"🚨 SECURITY ALERT: Security Group '{name}' has Port 22 open to the world!"
+            for rule in ingress_rules:
+                from_port = int(rule.get('from_port', 0))
+                cidrs = rule.get('cidr_blocks', [])
+                
+                # Check for Port 22
+                if from_port == 22:
+                    assert "0.0.0.0/0" not in cidrs, \
+                        f"🚨 SECURITY ALERT: Security Group '{name}' allows SSH from 0.0.0.0/0. Restrict it!"
