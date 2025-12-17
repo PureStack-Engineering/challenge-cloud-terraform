@@ -14,32 +14,48 @@ def tf_code():
         return hcl2.load(file)
 
 def test_s3_is_private(tf_code):
-    """Policy: S3 Buckets must NOT be public."""
+    """
+    Policy: S3 Buckets must NOT be public.
+    Check: acl must be 'private'.
+    """
     resources = tf_code.get('resource', [])
-    s3_buckets = [r for r in resources if 'aws_s3_bucket' in r]
-    
     found = False
-    for bucket_wrapper in s3_buckets:
-        for name, config in bucket_wrapper.items():
-            if name == 'finance_data':
-                found = True
-                acl = config.get('acl', 'private')
-                assert acl == 'private', f"🚨 SECURITY ALERT: Bucket '{name}' is '{acl}'. Must be 'private'."
-    
+
+    for entry in resources:
+        # Check if this resource block is an s3 bucket
+        if 'aws_s3_bucket' in entry:
+            # entry['aws_s3_bucket'] is a dict of {name: config}
+            buckets = entry['aws_s3_bucket']
+            for name, config in buckets.items():
+                if name == 'finance_data':
+                    found = True
+                    acl = config.get('acl', 'private')
+                    assert acl == 'private', f"🚨 SECURITY ALERT: Bucket '{name}' is '{acl}'. Must be 'private'."
+
     if not found:
-        pytest.fail("❌ Resource 'aws_s3_bucket.finance_data' not found.")
+        pytest.fail("❌ Resource 'aws_s3_bucket.finance_data' not found in main.tf")
 
 def test_ssh_is_restricted(tf_code):
-    """Policy: SSH (Port 22) must NOT be open to the world."""
+    """
+    Policy: SSH (Port 22) must NOT be open to the world (0.0.0.0/0).
+    """
     resources = tf_code.get('resource', [])
-    security_groups = [r for r in resources if 'aws_security_group' in r]
     
-    for sg_wrapper in security_groups:
-        for name, config in sg_wrapper.items():
-            ingress_rules = config.get('ingress', [])
-            if isinstance(ingress_rules, dict): ingress_rules = [ingress_rules]
-            
-            for rule in ingress_rules:
-                if int(rule.get('from_port', 0)) == 22:
-                    cidrs = rule.get('cidr_blocks', [])
-                    assert "0.0.0.0/0" not in cidrs, f"🚨 SECURITY ALERT: Security Group '{name}' allows SSH from 0.0.0.0/0."
+    for entry in resources:
+        if 'aws_security_group' in entry:
+            security_groups = entry['aws_security_group']
+            for name, config in security_groups.items():
+                
+                # Normalize ingress rules (can be a list or single dict)
+                ingress_rules = config.get('ingress', [])
+                if isinstance(ingress_rules, dict):
+                    ingress_rules = [ingress_rules]
+                
+                for rule in ingress_rules:
+                    # Check from_port (can be int or string in parsed HCL)
+                    from_port = int(rule.get('from_port', 0))
+                    
+                    if from_port == 22:
+                        cidrs = rule.get('cidr_blocks', [])
+                        assert "0.0.0.0/0" not in cidrs, \
+                            f"🚨 SECURITY ALERT: Security Group '{name}' allows SSH from 0.0.0.0/0. Restrict it!"
