@@ -1,6 +1,5 @@
 provider "aws" {
   region = "us-east-1"
-  # Note: Credentials are handled via Environment Variables (Do not hardcode them)
 }
 
 # 🚨 SECURITY VIOLATION 1: Public Bucket
