@@ -3,6 +3,15 @@
 **PureStack.es - Engineering Validation Protocol.**
 > *"Infrastructure is code. And code must be secure by design."*
 
+> [!TIP]
+> **HOW TO START THIS CHALLENGE**
+> 1. Click the green **"Use this template"** button (top right) -> **"Create a new repository"**.
+> 2. Select **"Private"** visibility (Crucial to prevent spoilers).
+> 3. Clone your new private repository to your machine.
+> 4. Once finished, invite user **[JLMoraCastilla](https://github.com/JLMoraCastilla)]** as a collaborator to review.
+>
+> ⚠️ **DO NOT FORK** this repository directly, as it will force your solution to be public.
+
 ---
 
 ### 📋 Context & Mission
@@ -14,7 +23,7 @@ We don't verify if you can click buttons in the AWS Console. We audit your abili
 **The Mission:** You must act as the **Security Engineer**. Audit the code, run the policy checks, and refactor the Terraform to make it secure without breaking the infrastructure.
 
 ### 🚦 Certification Levels (Choose your Difficulty)
-State your target level in your Pull Request.
+State your target level in your Pull Request (or final commit message).
 
 #### 🥉 Level 3: Essential / Mid-Level
 * **Focus:** Basic Security Hygiene.
@@ -53,7 +62,7 @@ State your target level in your Pull Request.
 
 ### 🚀 Execution Instructions
 
-1.  **Fork** this repository.
+1.  **Use the Template:** Create your **Private Repository** using the instructions at the top of this file.
 2.  Install dependencies:
     ```bash
     pip install -r requirements.txt
@@ -64,7 +73,7 @@ State your target level in your Pull Request.
 4.  **Fix the Vulnerabilities:**
     * Edit `terraform/main.tf`.
     * Re-run `pytest` until all tests pass.
-5.  Submit via **Pull Request**.
+5.  **Submit:** Push your changes to your private repo and invite the reviewer.
 
 > **Note:** You will see a ❌ (**Red Cross**) initially. This is the security scanner blocking the insecure deployment. Your goal is to turn it ✅ (**Green**).
 
@@ -94,3 +103,18 @@ To ensure our **Automated Auditor** works, keep the core structure:
 ├── .gitignore
 ├── requirements.txt     # Dependencies
 └── README.md
+```
+---
+## ⚖️ License & Legal Notice
+
+**© 2025 PureStack.es. All Rights Reserved.**
+
+This repository is "Source Available" for **evaluation purposes only**.
+
+* **Public viewing:** Allowed.
+* **Commercial use:** ❌ Strictly Prohibited.
+* **Redistribution:** ❌ Strictly Prohibited.
+
+By accessing this material, you agree to the terms in `LICENSE.md`.
+
+> **🚫 Publishing solutions to public repositories is a violation of these terms.**
