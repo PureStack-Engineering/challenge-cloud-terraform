@@ -1,24 +1,24 @@
-# ACUERDO DE USO Y LICENCIA PURESTACK
+# PURESTACK LICENSE AND TERMS OF USE
 
-**© 2024 PureStack.es. Todos los derechos reservados.**
+**© 2026 PureStack. All rights reserved.**
 
-Este repositorio es público con fines de **demostración técnica y portafolio**. Aunque el código fuente es visible, **NO es Open Source** ni Libre.
+This repository is public for **technical demonstration and portfolio** purposes. Although the source code is visible, it is **NOT Open Source** nor Free Software.
 
-### 1. Permisos de Visualización
-Se concede permiso para visualizar, clonar y analizar este código únicamente con fines de:
-* Evaluación personal como candidato en un proceso de PureStack.
-* Revisión técnica de la calidad de ingeniería de PureStack.
+### 1. Viewing Permissions
+Permission is granted to view, clone, and analyze this code solely for the purposes of:
+* Personal evaluation as a candidate in a PureStack recruitment process.
+* Technical review of PureStack’s engineering quality.
 
-### 2. Prohibiciones Estrictas (Lo que NO puedes hacer)
-* 🚫 **Uso Comercial:** No puedes utilizar este material para contratar personal en otras empresas, ni para formación remunerada, ni integrarlo en plataformas de terceros.
-* 🚫 **Obras Derivadas:** No puedes modificar el `audit.yml` o los escenarios para crear tu propia batería de pruebas basada en este trabajo.
-* 🚫 **Publicación de Soluciones (SPOILERS):** Queda prohibido publicar la solución a este reto en repositorios públicos, blogs o redes sociales. Esto invalida el proceso para futuros candidatos.
+### 2. Strict Prohibitions (What you CANNOT do)
+* 🚫 **Commercial Use:** You may not use this material to hire personnel for other companies, for paid training, or to integrate it into third-party platforms.
+* 🚫 **Derivative Works:** You may not modify `audit.yml` or the scenarios to create your own testing suite based on this work.
+* 🚫 **Publication of Solutions (SPOILERS):** It is strictly forbidden to publish the solution to this challenge in public repositories, blogs, or social media. Doing so invalidates the process for future candidates.
 
-### 3. Instrucciones para Candidatos
-Si estás realizando esta prueba:
-1.  **NO HAGAS FORK** de este repositorio (esto haría pública tu solución).
-2.  Clona el código localmente.
-3.  Sube tu solución a un **repositorio privado** y comparte el acceso únicamente con el equipo de PureStack.
+### 3. Instructions for Candidates
+If you are taking this technical test:
+1. **DO NOT FORK** this repository (this would make your solution public).
+2. Clone the code locally.
+3. Upload your solution to a **private repository** and share access exclusively with the PureStack team.
 
 ---
-*Cualquier violación de estos términos, especialmente el uso comercial no autorizado, será perseguida bajo las leyes de propiedad intelectual vigentes.*
+*Any violation of these terms, especially unauthorized commercial use, will be prosecuted under current intellectual property laws.*
