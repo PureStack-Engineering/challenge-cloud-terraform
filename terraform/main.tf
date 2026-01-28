@@ -5,7 +5,7 @@ provider "aws" {
 # 🚨 SECURITY VIOLATION 1: Public Bucket
 resource "aws_s3_bucket" "finance_data" {
   bucket = "purestack-finance-logs-2024"
-  acl    = "public-read" # <--- CANDIDATE MUST FIX THIS
+  acl    = "public-read"
 
   tags = {
     Environment = "Production"
@@ -22,7 +22,7 @@ resource "aws_security_group" "web_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # <--- CANDIDATE MUST FIX THIS
+    cidr_blocks = ["0.0.0.0/0"] 
   }
 
   egress {
